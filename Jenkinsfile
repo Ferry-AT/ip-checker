@@ -5,19 +5,20 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'git@github.com:Ferry-AT/ip-checker.git'
+                    url: 'git@github.com:Ferry-AT/ip-checker.git',
+                    credentialsId: 'github-ssh'
             }
         }
 
-        stage('Install dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'docker build -t ip-checker .'
             }
         }
 
-        stage('Run script') {
+        stage('Run Container') {
             steps {
-                sh 'python3 ip_checker.py'
+                sh 'docker run --rm ip-checker'
             }
         }
     }
