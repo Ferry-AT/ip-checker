@@ -10,16 +10,25 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build & Start Services') {
             steps {
-                sh 'docker build -t ip-checker .'
+                // Build images and start containers with docker-compose
+                sh 'docker compose up --build -d'
             }
         }
 
-        stage('Run Container') {
+        stage('Run App') {
             steps {
-                sh 'docker run --rm ip-checker'
+                // Run the Python app inside its container
+                sh 'docker compose run --rm ip_checker'
             }
+        }
+    }
+
+    post {
+        always {
+            // Stop and clean up all containers
+            sh 'docker compose down'
         }
     }
 }

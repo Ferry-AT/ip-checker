@@ -1,15 +1,21 @@
-# Use an official Python runtime as a base
 FROM python:3.11-slim
 
-# Set working directory
+# Set workdir
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Install system deps (curl for healthchecks, useful debugging)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
 COPY requirements.txt .
+
+# Install Python deps (including requests[socks])
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
-COPY . .
+# Copy app
+COPY ip_checker.py .
 
-# Default command
+# Run script
 CMD ["python", "ip_checker.py"]

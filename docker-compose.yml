@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  tor:
+    image: dperson/torproxy
+    ports:
+      - "9050:9050"
+    healthcheck:
+      test: ["CMD", "curl", "--socks5", "127.0.0.1:9050", "https://api.ipify.org"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ip_checker:
+    build: .
+    depends_on:
+      tor:
+        condition: service_healthy
+    environment:
+      TOR_PROXY: "tor:9050"
